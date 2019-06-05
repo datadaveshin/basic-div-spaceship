@@ -20,49 +20,40 @@ h2, p {
   min-width: 200px;
 }
 
-#background {
+#canvas {
   position: relative;
   margin: 10px;
   height: 200px;
   width: 800px;
   background-color: #000;
-/*   border: solid 20px blue; */
 }
 
-#main-ship {
-  height: 40px;
-  width: 10px;
-/*   border: 1px solid white; */
+#ship-container {
+  box-sizing: border-box;
+  border: 1px solid transparent;
   border-top-right-radius: 50%;
   border-top-left-radius: 50%;
   position: absolute;
-/*   display: flex; */
-  flex-direction: row;
-/*   justify-content: center; */
-/*   align-items: flex; */
-  top: 80px;
-  left: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 #ship-body {
-  height: 30px;
-  width: 10px;
+  box-sizing: inherit;
   border: 1px solid white;
   border-top-right-radius: 50%;
   border-top-left-radius: 50%;
 }
 
-#fire {
-  height: 5px;
-  width: 2px;
-  background-color: red;
+#ship-flame {
+  box-sizing: inherit;
+  background-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 4px 2px 2px white;
   padding: 2px;
-  display: relative;
   visibility: hidden;
   top: -80px;
   border-bottom-left-radius: 50%;
   border-bottom-right-radius: 50%;
-  margin: auto;
 }
-
-

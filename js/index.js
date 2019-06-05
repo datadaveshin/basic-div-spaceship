@@ -1,64 +1,96 @@
-let degrees = 0;
-let x = 400;
-let y = 80;
-let deltaX = 0;
-let deltaY = 0;
+{
+  const canvasWidth = 600;
+  const canvasHeight = 400;
 
-let mainShip = document.getElementById('main-ship');
-let fire = document.getElementById('fire');
-let degreeLog = document.getElementById('degree-log');
-let keyLog = document.getElementById('key-log');
-let xLog = document.getElementById('x-log');
-let yLog = document.getElementById('y-log');
+  const shipContainerWidth = 10;
+  const shipContainerHeight = 40;
 
-mainShip.style.left = "" + x + "px";
-mainShip.style.top = "" + y + "px";
+  const rotationMultiplier = 3;
+  const translateMultiplier = 5;
 
-function moveShip(e) {
-  if (e.code == "ArrowRight") {
-    degrees += 6;
-  } else if (e.code == "ArrowLeft") {
-    degrees -= 6;
-  } else if (e.code == "ArrowDown") {
-    deltaX = Math.cos((degrees + 90) * Math.PI / 180);
-    deltaY = Math.sin((degrees + 90) * Math.PI / 180);
-    x -= deltaX * 10;
-    y -= deltaY * 10;
-    fire.style.visibility = "visible";
-    setTimeout(function(){
-      fire.style.visibility = "hidden";
-    }, 100);
+  let shipRotDeg = 0;
+  let shipPosX = canvasWidth / 2;
+  let shipPosY = canvasHeight / 2;
+
+  let canvas = document.getElementById('canvas');
+  let shipContainer = document.getElementById('ship-container');
+  let shipBody = document.getElementById('ship-body');
+  let shipFlame = document.getElementById('ship-flame');
+
+  let keyLogger = document.getElementById('key-log');
+  let degreeLogger = document.getElementById('degree-log');
+  let xPosLogger = document.getElementById('x-log');
+  let yPosLogger = document.getElementById('y-log');
+
+  canvas.style.width = `${canvasWidth}px`;
+  canvas.style.height = `${canvasHeight}px`;
+
+  shipBodyWidth = shipContainerWidth;
+  shipBodyHeight = shipContainerHeight * 0.80;
+  shipFlameWidth = shipContainerWidth / 4;
+  shipFlameHeight = shipContainerHeight / 6;
+
+  shipContainer.style.width = `${shipContainerWidth}px`;
+  shipContainer.style.height = `${shipContainerHeight}px`;
+  shipBody.style.width = `${shipBodyWidth}px`;
+  shipBody.style.height = `${shipBodyHeight}px`;
+  shipFlame.style.width = `${shipFlameWidth}px`;
+  shipFlame.style.height = `${shipFlameHeight}px`
+
+  shipContainer.style.left = `${shipPosX}px`;
+  shipContainer.style.top = `${shipPosY}px`;
+
+  const translate = (axis, deg) => {
+    if (axis == "X" || axis == "x") {
+      return Math.cos((deg + 90) * Math.PI / 180);
+    }
+    if (axis == "Y" || axis == "y") {
+      return Math.sin((deg + 90) * Math.PI / 180);
+    }
   }
-  
-  if (degrees > 359) {
-    degrees = 0;
+
+  const moveShip = (e) => {
+    if (e.code == "ArrowRight") {
+      shipRotDeg += rotationMultiplier;
+    } else if (e.code == "ArrowLeft") {
+      shipRotDeg -= rotationMultiplier;
+    } else if (e.code == "ArrowDown") {
+      shipPosX -= translate("X", shipRotDeg) * translateMultiplier;
+      shipPosY -= translate("Y", shipRotDeg) * translateMultiplier;
+      shipFlame.style.visibility = "visible";
+      setTimeout(function(){
+        shipFlame.style.visibility = "hidden";
+      }, 100);
+    }
+
+    if (shipRotDeg > 359) {
+      shipRotDeg = 0;
+    }
+
+    if (shipRotDeg < 0) {
+      shipRotDeg = 360 - rotationMultiplier;
+    }
+
+    if (shipPosX <= Math.floor(shipContainerHeight / 4)) {
+      shipPosX = Math.floor(canvasWidth - (shipContainerHeight / 2));
+    } else if (shipPosX > Math.floor(canvasWidth - (shipContainerHeight / 2))) {
+      shipPosX = Math.floor(shipContainerHeight / 4);
+    }
+
+    if (shipPosY < 0) {
+      shipPosY = Math.floor(canvasHeight - shipContainerHeight);
+    } else if (shipPosY > Math.floor(canvasHeight - shipContainerHeight)) {
+      shipPosY = 0;
+    }
+    shipContainer.style.transform = `rotate(${shipRotDeg}deg)`;
+    shipContainer.style.left = `${shipPosX}px`;
+    shipContainer.style.top = `${shipPosY}px`;
+
+    keyLogger.innerHTML = `Key: ${e.code}`;
+    degreeLogger.innerHTML = `Rotation degrees: ${shipRotDeg}<sup>o</sup>`;
+    xPosLogger.innerHTML = `X position: ${Math.floor(shipPosX)}px`;
+    yPosLogger.innerHTML = `Y position: ${Math.floor(shipPosY)}px`;
   }
-  
-  if (degrees < 0) {
-    degrees = 360 - 6;
-  }
-  
-  if (x <= 10) {
-    x = 780;
-  } else if (x >= 780) {
-    x = 10;
-  }
-  
-  if (y < 0) {
-    y = 170;
-  } else if (y > 170) {
-    y = 0;
-  }
-  
-  
-  mainShip.style.transform = "rotate(+" + degrees + "deg)";
-  mainShip.style.left = "" + x + "px";
-  mainShip.style.top = "" + y + "px";
-  
-  keyLog.innerHTML = "Key: " + e.code;
-  degreeLog.innerHTML = "Degrees: " + degrees + "<sup>o</sup>";
-  xLog.innerHTML = "x pos: " + Math.floor(x) + "px";
-  yLog.innerHTML = "y pos: " + Math.floor(y) + "px";
+
+  document.addEventListener('keydown', moveShip);
 }
-
-document.addEventListener('keydown', moveShip);
