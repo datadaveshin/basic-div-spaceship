@@ -42,10 +42,10 @@
 
   const translate = (axis, deg) => {
     if (axis == "X" || axis == "x") {
-      return Math.cos((deg + 90) * Math.PI / 180);
+      return -Math.cos((deg + 90) * Math.PI / 180);
     }
     if (axis == "Y" || axis == "y") {
-      return Math.sin((deg + 90) * Math.PI / 180);
+      return -Math.sin((deg + 90) * Math.PI / 180);
     }
   }
 
@@ -55,21 +55,18 @@
     } else if (e.code == "ArrowLeft") {
       shipRotDeg -= rotationMultiplier;
     } else if (e.code == "ArrowDown") {
-      shipPosX -= translate("X", shipRotDeg) * translateMultiplier;
-      shipPosY -= translate("Y", shipRotDeg) * translateMultiplier;
+      shipPosX += translate("X", shipRotDeg) * translateMultiplier;
+      shipPosY += translate("Y", shipRotDeg) * translateMultiplier;
       shipFlame.style.visibility = "visible";
-      setTimeout(function(){
+      setTimeout( () => {
         shipFlame.style.visibility = "hidden";
-      }, 100);
-    }
-
-    if (shipRotDeg > 359) {
-      shipRotDeg = 0;
+      }, 10);
     }
 
     if (shipRotDeg < 0) {
       shipRotDeg = 360 - rotationMultiplier;
     }
+    shipRotDeg %= 360;
 
     if (shipPosX <= Math.floor(shipContainerHeight / 4)) {
       shipPosX = Math.floor(canvasWidth - (shipContainerHeight / 2));
@@ -82,6 +79,7 @@
     } else if (shipPosY > Math.floor(canvasHeight - shipContainerHeight)) {
       shipPosY = 0;
     }
+
     shipContainer.style.transform = `rotate(${shipRotDeg}deg)`;
     shipContainer.style.left = `${shipPosX}px`;
     shipContainer.style.top = `${shipPosY}px`;
